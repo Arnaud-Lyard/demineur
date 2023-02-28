@@ -23,3 +23,7 @@
   margin: 10px;
   cursor: pointer;
 }
+
+.App table {
+  border-collapse: collapse;
+}
