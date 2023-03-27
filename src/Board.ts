@@ -31,51 +31,53 @@ export const populateWithBombs = (board: Board, bombRatio = 0.2) => {
   });
 };
 
-  export const getNeighbors = (board: Board, cell: Cell): Cell[] => {
-    const { x, y } = cell;
-    const neighbors = [];
-    for (let i = x - 1; i <= x + 1; i++) {
-      for (let j = y - 1; j <= y + 1; j++) {
-        if (i >= 0 && i < board.length && j >= 0 && j < board.length) {
-          neighbors.push(board[i][j]);
-        }
-      }
-    }
-    return neighbors;
-  };
+export const getNeighbors = (board: Board, cell: Cell): Cell[] => {
+  const neighbors = [];
+  if(cell.y !== 0) neighbors.push(board[cell.x][cell.y - 1]);
+  if(cell.y !== 0 && cell.x !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y - 1]);
+  if(cell.x !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y]);
+  if(cell.x !== board.length - 1 && cell.y !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y + 1]);
+  if(cell.y !== board.length - 1) neighbors.push(board[cell.x][cell.y + 1]);
+  if(cell.y !== board.length - 1 && cell.x !== 0) neighbors.push(board[cell.x - 1][cell.y + 1]);
+  if(cell.x !== 0) neighbors.push(board[cell.x - 1][cell.y]);
+  if(cell.x !== 0 && cell.y !== 0) neighbors.push(board[cell.x - 1][cell.y - 1]);
 
-  export const populateWithNeighborsCount = (board: Board) => {
-    forEachCell(board, (cell) => {
-      if (cell.val === "bomb") {
-        getNeighbors(board, cell).forEach((neighbor) => {
-          if (neighbor.val !== "bomb") {
-            neighbor.val += 1;
-          }
-        });
-      }
-    });
-  };
+  return neighbors;
+};
 
-  export const getGameStatus = (
-    board: Board
-  ): "won" | "lost" | "inProgress" => {
-    let lost = false;
-    let won = true;
-    forEachCell(board, (cell) => {
-      if (cell.val === "bomb" && cell.revealed) {
-        lost = true;
-      }
-      if (cell.val !== "bomb" && !cell.revealed) {
-        won = false;
-      }
-    });
-    if (lost) {
-      return "lost";
+export const populateWithNeighborsCount = (board: Board) => {
+  forEachCell(board, (cell) => {
+    if (cell.val !== "bomb") {
+      cell.val = getNeighbors(board, cell).filter((cell) => cell.val === "bomb").length
     }
-    if (won) {
-      return "won";
-    }
-    return "inProgress";
-  };
+  });
+};
 
-//   export const createBoard = (size, bombRatio) => {};
+export const getGameStatus = (
+  board: Board
+): "won" | "lost" | "inProgress" => {
+  let lost = false;
+  let won = true;
+  forEachCell(board, (cell) => {
+    if (cell.val === "bomb" && cell.revealed) {
+      lost = true;
+    }
+    if (cell.val !== "bomb" && !cell.revealed) {
+      won = false;
+    }
+  });
+  if (lost) {
+    return "lost";
+  }
+  if (won) {
+    return "won";
+  }
+  return "inProgress";
+};
+
+export const createBoard = (size = 5, bombRatio = 0.2) => {
+  const b = createEmptyBoard(size);
+  populateWithBombs(b, bombRatio);
+  populateWithNeighborsCount(b);
+  return b;
+};

@@ -1,22 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { Board, populateWithBombs, createEmptyBoard, populateWithNeighborsCount } from "./Board";
+import { useEffect, useState } from "react";
+import { Cell, createBoard, getGameStatus } from "./Board";
 
 const BOARD_SIZE = 5;
-const BOMB_RATIO = 0.2;
 
 function App() {
-  const [board, setBoard] = useState<Board>(createEmptyBoard(BOARD_SIZE));
+  const [board, setBoard] = useState(createBoard(BOARD_SIZE));
   const [boardIsRevealed, setBoardIsRevealed] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
-  useEffect(() => {
-    populateWithBombs(board, BOMB_RATIO);
-    populateWithNeighborsCount(board);
-  }, []);
-
   const reload = () => {
-    setBoard(createEmptyBoard(BOARD_SIZE));
+    setBoard(createBoard(BOARD_SIZE));
+    setIsFinished(false);
+    setBoardIsRevealed(false)
   };
+
+  const revealCell = (cell: Cell) => {
+    let newBoard = [...board];
+    newBoard[cell.x][cell.y].revealed = true;
+    setBoard(newBoard);
+  }
+
+  useEffect(() => {
+    const status = getGameStatus(board)
+    if (status === "won") {
+      setIsFinished(true)
+      setBoardIsRevealed(true)
+    } else if (status === "lost") {
+      setIsFinished(true)
+      setBoardIsRevealed(true)
+    } else {
+      setIsFinished(false)
+    }
+  },[board])
 
   return (
     <div className="App">
@@ -44,7 +59,7 @@ function App() {
                         backgroundColor: "",
                       }}
                       key={cell.y}
-                      onClick={() => {}}
+                      onClick={() => {revealCell(cell)}}
                     >
                       {(cell.revealed || boardIsRevealed) &&
                         (cell.val === "bomb" ? "💣" : cell.val)}
