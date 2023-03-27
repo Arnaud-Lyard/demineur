@@ -1,4 +1,4 @@
-interface Cell {
+export interface Cell {
   x: number;
   y: number;
   val: number | "bomb";
@@ -56,8 +56,26 @@ export const populateWithBombs = (board: Board, bombRatio = 0.2) => {
     });
   };
 
-//   export const getGameStatus = (
-//     board: Board
-//   ): "won" | "lost" | "inProgress" => {};
+  export const getGameStatus = (
+    board: Board
+  ): "won" | "lost" | "inProgress" => {
+    let lost = false;
+    let won = true;
+    forEachCell(board, (cell) => {
+      if (cell.val === "bomb" && cell.revealed) {
+        lost = true;
+      }
+      if (cell.val !== "bomb" && !cell.revealed) {
+        won = false;
+      }
+    });
+    if (lost) {
+      return "lost";
+    }
+    if (won) {
+      return "won";
+    }
+    return "inProgress";
+  };
 
 //   export const createBoard = (size, bombRatio) => {};
