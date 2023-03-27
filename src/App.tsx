@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Board, populateWithBombs, createEmptyBoard } from "./Board";
+import { Board, populateWithBombs, createEmptyBoard, populateWithNeighborsCount } from "./Board";
 
 const BOARD_SIZE = 5;
 const BOMB_RATIO = 0.2;
@@ -11,6 +11,7 @@ function App() {
 
   useEffect(() => {
     populateWithBombs(board, BOMB_RATIO);
+    populateWithNeighborsCount(board);
   }, []);
 
   const reload = () => {
