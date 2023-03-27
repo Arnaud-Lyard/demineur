@@ -18,23 +18,20 @@ export const createEmptyBoard = (size: number): Board => {
   return board;
 };
 
-export const cheating = (grid: Board): Board => {
-  const gridlength = grid.length;
-  let boardCheated: Board = [];
-  for (let i = 0; i < gridlength; i++) {
-    boardCheated[i] = [];
-    for (let j = 0; j < gridlength; j++) {
-      boardCheated[i][j] = { x: i, y: j, val: 0, revealed: true };
-    }
-  }
-  return boardCheated;
+export const forEachCell = (board: Board, fn: (cell: Cell) => void) => {
+  board.forEach((row) => {
+    row.forEach((cell) => {
+      fn(cell);
+    });
+  });
+};
+export const populateWithBombs = (board: Board, bombRatio = 0.2) => {
+  forEachCell(board, (cell) => {
+    cell.val = Math.random() < bombRatio ? "bomb" : 0;
+  });
 };
 
-//   export const forEachCell = (board: Board, fn: (cell: Cell) => void) => {};
-
 //   export const getNeighbors = (board: Board, cell: Cell): Cell[] => {};
-
-//   export const populateWithBombs = (board: Board, bombRatio = 0.2) => {};
 
 //   export const populateWithNeighborsCount = (board: Board) => {};
 
