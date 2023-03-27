@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Board, cheating, createEmptyBoard } from "./Board";
+import { Board, populateWithBombs, createEmptyBoard } from "./Board";
 
 const BOARD_SIZE = 5;
+const BOMB_RATIO = 0.2;
 
 function App() {
   const [board, setBoard] = useState<Board>(createEmptyBoard(BOARD_SIZE));
   const [boardIsRevealed, setBoardIsRevealed] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
+  useEffect(() => {
+    populateWithBombs(board, BOMB_RATIO);
+  }, []);
+
   const reload = () => {
     setBoard(createEmptyBoard(BOARD_SIZE));
-    setIsFinished(false);
   };
 
   return (
