@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { Cell, createBoard, getGameStatus } from "./Board";
+import { useState } from "react";
+import "./index.css";
+import { Board, Cell, createBoard, forEachCell, getGameStatus } from "./Board";
+import produce from "immer";
 
 const BOARD_SIZE = 5;
 
@@ -11,27 +13,40 @@ function App() {
   const reload = () => {
     setBoard(createBoard(BOARD_SIZE));
     setIsFinished(false);
-    setBoardIsRevealed(false)
   };
 
-  const revealCell = (cell: Cell) => {
-    let newBoard = [...board];
-    newBoard[cell.x][cell.y].revealed = true;
-    setBoard(newBoard);
-  }
+  const handleCellClick = (
+    cell: Cell,
+    board: Board,
+    setBoard: any,
+    setIsFinished: any
+  ) => {
+    const newBoard = produce(board, (draft: any) => {
+      if (cell.val === "bomb") {
+        draft[cell.x][cell.y].backgroundColor = "red";
+        forEachCell(draft, (cell) => {
+          cell.revealed = true;
+        });
+      } else {
+        draft[cell.x][cell.y].backgroundColor = "green";
+      }
+      draft[cell.x][cell.y].revealed = true;
+    });
 
-  useEffect(() => {
-    const status = getGameStatus(board)
-    if (status === "won") {
-      setIsFinished(true)
-      setBoardIsRevealed(true)
-    } else if (status === "lost") {
-      setIsFinished(true)
-      setBoardIsRevealed(true)
-    } else {
-      setIsFinished(false)
+    setBoard(newBoard);
+
+    const status = getGameStatus(newBoard);
+    if (status === "lost") {
+      setIsFinished(true);
+
+      setTimeout(() => alert("YOU LOOSE :("), 200);
+    } else if (status === "won") {
+      setTimeout(() => alert("CONGRATS :D"), 200);
+      setIsFinished(true);
     }
-  },[board])
+  };
+
+  console.log(board);
 
   return (
     <div className="App">
@@ -56,10 +71,12 @@ function App() {
                   {row.map((cell) => (
                     <td
                       style={{
-                        backgroundColor: "",
+                        backgroundColor: cell.backgroundColor,
                       }}
                       key={cell.y}
-                      onClick={() => {revealCell(cell)}}
+                      onClick={() =>
+                        handleCellClick(cell, board, setBoard, setIsFinished)
+                      }
                     >
                       {(cell.revealed || boardIsRevealed) &&
                         (cell.val === "bomb" ? "💣" : cell.val)}

@@ -3,6 +3,7 @@ export interface Cell {
   y: number;
   val: number | "bomb";
   revealed: boolean;
+  backgroundColor: string;
 }
 
 export type Board = Cell[][];
@@ -12,7 +13,7 @@ export const createEmptyBoard = (size: number): Board => {
   for (let i = 0; i < size; i++) {
     board[i] = [];
     for (let j = 0; j < size; j++) {
-      board[i][j] = { x: i, y: j, val: 0, revealed: false };
+      board[i][j] = { x: i, y: j, val: 0, revealed: false, backgroundColor: "transparent", };
     }
   }
   return board;
@@ -33,14 +34,14 @@ export const populateWithBombs = (board: Board, bombRatio = 0.2) => {
 
 export const getNeighbors = (board: Board, cell: Cell): Cell[] => {
   const neighbors = [];
-  if(cell.y !== 0) neighbors.push(board[cell.x][cell.y - 1]);
-  if(cell.y !== 0 && cell.x !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y - 1]);
-  if(cell.x !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y]);
-  if(cell.x !== board.length - 1 && cell.y !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y + 1]);
-  if(cell.y !== board.length - 1) neighbors.push(board[cell.x][cell.y + 1]);
-  if(cell.y !== board.length - 1 && cell.x !== 0) neighbors.push(board[cell.x - 1][cell.y + 1]);
-  if(cell.x !== 0) neighbors.push(board[cell.x - 1][cell.y]);
-  if(cell.x !== 0 && cell.y !== 0) neighbors.push(board[cell.x - 1][cell.y - 1]);
+  if (cell.y !== 0) neighbors.push(board[cell.x][cell.y - 1]);
+  if (cell.y !== 0 && cell.x !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y - 1]);
+  if (cell.x !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y]);
+  if (cell.x !== board.length - 1 && cell.y !== board.length - 1) neighbors.push(board[cell.x + 1][cell.y + 1]);
+  if (cell.y !== board.length - 1) neighbors.push(board[cell.x][cell.y + 1]);
+  if (cell.y !== board.length - 1 && cell.x !== 0) neighbors.push(board[cell.x - 1][cell.y + 1]);
+  if (cell.x !== 0) neighbors.push(board[cell.x - 1][cell.y]);
+  if (cell.x !== 0 && cell.y !== 0) neighbors.push(board[cell.x - 1][cell.y - 1]);
 
   return neighbors;
 };
@@ -53,26 +54,13 @@ export const populateWithNeighborsCount = (board: Board) => {
   });
 };
 
-export const getGameStatus = (
-  board: Board
-): "won" | "lost" | "inProgress" => {
-  let lost = false;
-  let won = true;
-  forEachCell(board, (cell) => {
-    if (cell.val === "bomb" && cell.revealed) {
-      lost = true;
-    }
-    if (cell.val !== "bomb" && !cell.revealed) {
-      won = false;
-    }
-  });
-  if (lost) {
-    return "lost";
-  }
-  if (won) {
-    return "won";
-  }
-  return "inProgress";
+export const getGameStatus = (board: Board): "won" | "lost" | "inProgress" => {
+  const allCells = board.flat();
+  const notBombs = allCells.filter((cell) => cell.val !== "bomb");
+  const lost = allCells.some((cell) => cell.revealed && cell.val === "bomb");
+  if (lost) return "lost";
+  const won = notBombs.every((cell) => cell.revealed);
+  return won ? "won" : "inProgress";
 };
 
 export const createBoard = (size = 5, bombRatio = 0.2) => {
