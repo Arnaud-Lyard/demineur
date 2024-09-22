@@ -13,10 +13,16 @@ You will need Node.js installed on your system to run the project.
 ## Installation
 Clone the repository to your local machine.
 Navigate to the project directory:
-```cd demineur```
+```
+cd demineur
+```
 Install the dependencies:
-```npm install```
+```
+npm install
+```
 Running the Application
 Start the React development server:
-```npm start```
+```
+npm start
+```
 Open your browser and go to http://localhost:3000 to play the game.
