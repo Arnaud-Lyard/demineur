@@ -2,9 +2,9 @@
 This is a simple implementation of the Minesweeper game, built using React.
 
 ## Features
-Classic Minesweeper gameplay with a grid of hidden cells
-Randomly placed mines
-The game ends when a mine is clicked or all non-mine cells are revealed
+- Classic Minesweeper gameplay with a grid of hidden cells
+- Randomly placed mines
+- The game ends when a mine is clicked or all non-mine cells are revealed
 
 ## Getting Started
 Prerequisites
